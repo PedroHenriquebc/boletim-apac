@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="style.css">
+    <script>
+        const mesorregiaoData = {
+            agreste: {
+                microrregioes: ["", "Vale do Ipanema", "Vale do Ipojuca", "Alto Capibaribe", "Médio Capibaribe", "Garanhuns", "Brejo Pernambucano"],
+                bacias: ["", "UNA", "IPOJUCA", "MUNDAÚ", "CAPIBARIBE", "IPANEMA", "SIRINHAÉM", "GI1", "GOIANA", "GI2", "GI4", "MOXOTÓ"]
+            },
+            mata: {
+                microrregioes: ["", "Mata Setentrional Pernambucana", "Vitória de Santo Antão", "Mata Meridional Pernambucana"],
+                bacias: ["", "SIRINHAÉM", "GOIANA", "GL4", "CAPIBARIBE", "UNA", "IPOJUCA", "GI4", "GI1", "MOXOTÓ"]
+            },
+            metropolitana: {
+                microrregioes: ["", "Itamaracá", "Recife", "Suape", "Fernando de Noronha"],
+                bacias: ["", "GI1", "GL1", "CAPIBARIBE", "GL2", "FERNANDO DE NORONHA", "GI2", "IPOJUCA"]
+            },
+            sertao: {
+                microrregioes: ["", "Araripina", "Salgueiro", "Pajeú", "Sertão do Moxotó"],
+                bacias: ["", "PAJEÚ", "BRÍGIDA", "MOXOTÓ", "TERRA NOVA", "GI1"]
+            },
+            saofrancisco: {
+                microrregioes: ["", "Petrolina", "Itaparica"],
+                bacias: ["", "PONTAL", "GI4", "TERRA NOVA", "PAJEÚ", "GI8", "MOXOTÓ", "BRÍGIDA", "GI3", "GI6", "GARÇAS"]
+            }
+        };
+
+        function updateSelections() {
+            let mesorregiao = document.getElementById('mesorregiao').value;
+            switch (mesorregiao) {
+                case "Agreste Pernambucano":
+                    mesorregiao = "agreste";
+                    break;
+                case "Mata Pernambucana":
+                    mesorregiao = "mata";
+                    break;
+                case "Metropolitana de Recife":
+                    mesorregiao = "metropolitana";
+                    break;
+                case "Sertão Pernambucano":
+                    mesorregiao = "sertao";
+                    break;
+                case "São Francisco Pernambucano":
+                    mesorregiao = "saofrancisco";
+                    break;
+            }
+
+            const microrregiaoSelect = document.getElementById('microrregiao');
+            const baciaSelect = document.getElementById('bacia');
+
+            microrregiaoSelect.innerHTML = '';
+            baciaSelect.innerHTML = '';
+
+            mesorregiaoData[mesorregiao].microrregioes.forEach(microrregiao => {
+                const option = document.createElement('option');
+                option.textContent = microrregiao;
+                microrregiaoSelect.appendChild(option);
+            });
+
+            mesorregiaoData[mesorregiao].bacias.forEach(bacia => {
+                const option = document.createElement('option');
+                option.textContent = bacia;
+                baciaSelect.appendChild(option);
+            });
+        }
+
+        function toggleDataFinal() {
+            const dataFinalLabel = document.getElementById('dataFinalLabel');
+            const dataFinal = document.getElementById('dataFinal');
+            const radioMensal = document.getElementById('mensal');
+            const radioDiario = document.getElementById('diario');
+
+            if (radioMensal.checked) {
+                dataFinalLabel.style.display = 'block';
+                dataFinal.style.display = 'block';
+                dataFinal.required = true;
+            } else {
+                dataFinalLabel.style.display = 'none';
+                dataFinal.style.display = 'none';
+                dataFinal.required = false;
+                dataFinal.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const radios = document.getElementsByName('tipoBoletimPeriodo');
+            radios.forEach(radio => {
+                radio.addEventListener('change', toggleDataFinal);
+            });
+
+            toggleDataFinal(); // Ensure the correct display state on page load
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <img src="logo2_apac_2024.png" alt="Logo">
+        <h1>Boletim</h1>
+        <form action="boletim.php" method="post">
+            <label for="mesorregiao">Mesorregião</label>
+            <select id="mesorregiao" name="mesorregiao" onchange="updateSelections()">
+                <option></option>
+                <option value="Agreste Pernambucano">Agreste Pernambucano</option>
+                <option value="Mata Pernambucana">Mata Pernambucana</option>
+                <option value="Metropolitana de Recife">Metropolitana de Recife</option>
+                <option value="Sertão Pernambucano">Sertão Pernambucano</option>
+                <option value="São Francisco Pernambucano">São Francisco Pernambucano</option>
+            </select>
+
+            <label for="microrregiao">Microrregião</label>
+            <select id="microrregiao" name="microrregiao"></select>
+
+            <label for="bacia">Bacia</label>
+            <select id="bacia" name="bacia"></select>
+
+            <input type="radio" id="mensal" name="tipoBoletimPeriodo" value="Mensal" checked="checked">
+            <label for="mensal">Mensal</label>
+            <input type="radio" id="diario" name="tipoBoletimPeriodo" value="Diário">
+            <label for="diario">Diário</label>
+            <br>
+
+            <label for="dataInicial">Data Inicial</label>
+            <input type="date" id="dataInicial" name="dataInicial" required>
+
+            <label for="dataFinal" id="dataFinalLabel" style="display:none;">Data Final</label>
+            <input type="date" id="dataFinal" name="dataFinal" style="display:none;">
+
+            <button type="submit">Gerar</button>
+        </form>
+    </div>
+</body>
+
+</html>
