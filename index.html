@@ -10,26 +10,33 @@
     <script>
         const mesorregiaoData = {
             agreste: {
-                microrregioes: ["", "Vale do Ipanema", "Vale do Ipojuca", "Alto Capibaribe", "Médio Capibaribe", "Garanhuns", "Brejo Pernambucano"],
-                bacias: ["", "UNA", "IPOJUCA", "MUNDAÚ", "CAPIBARIBE", "IPANEMA", "SIRINHAÉM", "GI1", "GOIANA", "GI2", "GI4", "MOXOTÓ"]
+                microrregioes: ["Todas", "Vale do Ipanema", "Vale do Ipojuca", "Alto Capibaribe", "Médio Capibaribe", "Garanhuns", "Brejo Pernambucano"],
+                bacias: ["Todas", "UNA", "IPOJUCA", "MUNDAÚ", "CAPIBARIBE", "IPANEMA", "SIRINHAÉM", "GI1", "GOIANA", "GI2", "GI4", "MOXOTÓ"]
             },
             mata: {
-                microrregioes: ["", "Mata Setentrional Pernambucana", "Vitória de Santo Antão", "Mata Meridional Pernambucana"],
-                bacias: ["", "SIRINHAÉM", "GOIANA", "GL4", "CAPIBARIBE", "UNA", "IPOJUCA", "GI4", "GI1", "MOXOTÓ"]
+                microrregioes: ["Todas", "Mata Setentrional Pernambucana", "Vitória de Santo Antão", "Mata Meridional Pernambucana"],
+                bacias: ["Todas", "SIRINHAÉM", "GOIANA", "GL4", "CAPIBARIBE", "UNA", "IPOJUCA", "GI4", "GI1", "MOXOTÓ"]
             },
             metropolitana: {
-                microrregioes: ["", "Itamaracá", "Recife", "Suape", "Fernando de Noronha"],
-                bacias: ["", "GI1", "GL1", "CAPIBARIBE", "GL2", "FERNANDO DE NORONHA", "GI2", "IPOJUCA"]
+                microrregioes: ["Todas", "Itamaracá", "Recife", "Suape", "Fernando de Noronha"],
+                bacias: ["Todas", "GI1", "GL1", "CAPIBARIBE", "GL2", "FERNANDO DE NORONHA", "GI2", "IPOJUCA"]
             },
             sertao: {
-                microrregioes: ["", "Araripina", "Salgueiro", "Pajeú", "Sertão do Moxotó"],
-                bacias: ["", "PAJEÚ", "BRÍGIDA", "MOXOTÓ", "TERRA NOVA", "GI1"]
+                microrregioes: ["Todas", "Araripina", "Salgueiro", "Pajeú", "Sertão do Moxotó"],
+                bacias: ["Todas", "PAJEÚ", "BRÍGIDA", "MOXOTÓ", "TERRA NOVA", "GI1"]
             },
             saofrancisco: {
-                microrregioes: ["", "Petrolina", "Itaparica"],
-                bacias: ["", "PONTAL", "GI4", "TERRA NOVA", "PAJEÚ", "GI8", "MOXOTÓ", "BRÍGIDA", "GI3", "GI6", "GARÇAS"]
+                microrregioes: ["Todas", "Petrolina", "Itaparica"],
+                bacias: ["Todas", "PONTAL", "GI4", "TERRA NOVA", "PAJEÚ", "GI8", "MOXOTÓ", "BRÍGIDA", "GI3", "GI6", "GARÇAS"]
+            },
+            todas: {
+                microrregioes: ["Todas"],
+                bacias: ["Todas", "FERNANDO DE NORONHA", "GI2", "GL3", "RIO TIMBÓ", "RIO BEBERIBE", "RIO PARATIBE", "GL4", "GI6", "GI9", "GI8", "GL5",
+                    "GI5", "GL6", "GI1", "GI3", "GI4", "GI7", "IPOJUCA", "BRÍGIDA", "CAPIBARIBE", "GARÇAS", "GL1", "UNA", "PAJEÚ", "PONTAL", "SIRINHAÉM",
+                    "TERRA NOVA", "GL2", "MOXOTÓ", "SIRINHAÉM", "IPANEMA", "GOIANA", "MUNDAÚ"]
+
             }
-        };
+        }
 
         function updateSelections() {
             let mesorregiao = document.getElementById('mesorregiao').value;
@@ -48,6 +55,9 @@
                     break;
                 case "São Francisco Pernambucano":
                     mesorregiao = "saofrancisco";
+                    break;
+                case "Todas":
+                    mesorregiao = "todas";
                     break;
             }
 
@@ -96,6 +106,10 @@
 
             toggleDataFinal(); // Ensure the correct display state on page load
         });
+
+        window.onload = function () {
+            updateSelections();
+        };
     </script>
 </head>
 
@@ -106,7 +120,7 @@
         <form action="boletim.php" method="post">
             <label for="mesorregiao">Mesorregião</label>
             <select id="mesorregiao" name="mesorregiao" onchange="updateSelections()">
-                <option></option>
+                <option value="Todas">Todas</option>
                 <option value="Agreste Pernambucano">Agreste Pernambucano</option>
                 <option value="Mata Pernambucana">Mata Pernambucana</option>
                 <option value="Metropolitana de Recife">Metropolitana de Recife</option>

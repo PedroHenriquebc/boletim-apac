@@ -82,14 +82,13 @@
     $dataInicialFormatUrl = $dataInicial[0] . $dataInicial[1] . $dataInicial[2];
 
     // echo "meso: " . $mesorregiaof. "<br>";
+    // echo empty($mesorregiaof);
     // echo "micro: " . $microrregiaof. "<br>";
     // echo "bacia: " . $baciaf. "<br>";
     // echo "tipo boletim: " . $tipoBoletimf. "<br>";
     // echo "dados completos: " . $dadosCompletosf. "<br>";
     // echo "data inicial: " . $_POST["dataInicial"]. "<br>";
     // echo "data final: " . $_POST["dataFinal"]. "<br>";
-
-    // echo "<hr>";
 
     $hoje = date('d/m/Y');
     // echo $hoje;
@@ -150,7 +149,7 @@
 <!-- MESORREGIAO VAZIA(RETORNA TUDO) -->
             <div>
                 <?php
-                if(empty($mesorregiaof)) {    
+                if($mesorregiaof == 'Todas'and $baciaf == 'Todas') {    
                     foreach($data as $item){
                 ?>
             
@@ -160,16 +159,16 @@
                         <th>Município</th>
                         <th>Estação</th>
                         <th>Bacia</th>
-                        <th>Microregião</th>
+                        <th>Microrregião</th>
                         
-                        <th>Chuva Total (mm)</th>
+                        <th>Chuva Total(mm)</th>
                         
                         <?php
                         if($tipoBoletimPeriodo == 'Mensal'){
                         ?>
-                        <th>Climatologia (mm)</th>
-                        <th>Anomalia (mm)</th>
-                        <th>Desvio Relativo</th>
+                        <th>Climatologia(mm)</th>
+                        <th>Anomalia(mm)</th>
+                        <th>Desvio Relativo(%)</th>
                         <?php
                         }
                         ?>
@@ -201,10 +200,70 @@
                     ?>
                 </table>
             </div>
+            <div>
+                <?php
+                if($mesorregiaof == 'Todas'and $baciaf != 'Todas') {    
+                    foreach($data as $item){
+                    foreach($item->estacoes as $estacao) {
+                        if($estacao->bacia == $baciaf) {            
+                ?>
+            
+                <table>
+                    <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
+                    <tr>
+                        <th>Município</th>
+                        <th>Estação</th>
+                        <th>Bacia</th>
+                        <th>Microrregião</th>
+                        
+                        <th>Chuva Total(mm)</th>
+                        
+                        <?php
+                        if($tipoBoletimPeriodo == 'Mensal'){
+                        ?>
+                        <th>Climatologia(mm)</th>
+                        <th>Anomalia(mm)</th>
+                        <th>Desvio Relativo(%)</th>
+                        <?php
+                        }
+                        ?>
+                        
+                    </tr>
+                   
+                    <tr>
+                        <?php
+                       
+                 
+                        ?>
+                        <td><?php echo $estacao->municipio ?></td>
+                        <td><?php echo $estacao->nomeEstacao ?></td>
+                        <td><?php echo $estacao->bacia ?></td> 
+                        <td><?php echo $estacao->microregiao ?></td>  
+                        <td><?php echo $estacao->soma_chuva_resultado ?></td>
+                        <?php
+                        if($tipoBoletimPeriodo == 'Mensal'){
+                        ?>
+                        <td><?php echo $estacao->climatologia ?></td>
+                        <td><?php echo $estacao->anomalia ?></td>
+                        <td><?php echo $estacao->desvio_relativo ?></td>
+                        <?php
+                        }
+                        ?>
+                    </tr>
+                    <?php
+                                 
+                            }
+                        }    
+                    }
+                }
+                      
+                    ?>
+                </table>
+            </div>
 <!-- MESORREGIAO NÃO VAZIA -->
             <div>
                 <?php
-                if(!empty($mesorregiaof)) {    
+                if($mesorregiaof != "Todas") {    
                     foreach($data as $item){
                         if($item->mesoregiao == $mesorregiaof){
 
@@ -216,23 +275,23 @@
                         <th>Município</th>
                         <th>Estação</th>
                         <th>Bacia</th>
-                        <th>Microregião</th>
+                        <th>Microrregião</th>
                         
-                        <th>Chuva Total (mm)</th>
+                        <th>Chuva Total(mm)</th>
                         <?php
                         if($tipoBoletimPeriodo == 'Mensal'){
                         ?>
-                        <th>Climatologia (mm)</th>
-                        <th>Anomalia (mm)</th>
-                        <th>Desvio Relativo</th>
+                        <th>Climatologia(mm)</th>
+                        <th>Anomalia(mm)</th>
+                        <th>Desvio Relativo(%)</th>
                         <?php
                         }
                         ?>
                     </tr>
                     <?php
                         foreach($item->estacoes as $estacao){
-                            if(!empty($microrregiaof)){
-                                if(!empty($baciaf) and $estacao->bacia == $baciaf and $estacao->microregiao == $microrregiaof) {
+                            if($microrregiaof != 'Todas'){
+                                if($baciaf != 'Todas' and $estacao->bacia == $baciaf and $estacao->microregiao == $microrregiaof) {
                     ?>
                                     <tr>
                                     <td><?php echo $estacao->municipio ?></td>
@@ -251,7 +310,7 @@
                                     ?>
                                     </tr>
                                 <?php 
-                                } elseif (empty($baciaf) and $estacao->microregiao == $microrregiaof) {
+                                } elseif ($baciaf == 'Todas' and $estacao->microregiao == $microrregiaof) {
                                 ?>
                                     <tr>
                                     <td><?php echo $estacao->municipio ?></td>
@@ -272,7 +331,7 @@
                                 <?php
                                 }
 
-                            } elseif (!empty($baciaf) and $estacao->bacia == $baciaf){
+                            } elseif ($baciaf != 'Todas' and $estacao->bacia == $baciaf){
                                 ?>
                                 <tr>
                                 <td><?php echo $estacao->municipio ?></td>
@@ -291,7 +350,7 @@
                                 ?>
                                 </tr>
                                 <?php
-                            } elseif (empty($baciaf) and empty($microrregiaof)) {
+                            } elseif ($baciaf == 'Todas' and $microrregiaof == 'Todas') {
                                 ?>
                                 <tr>
                                 <td><?php echo $estacao->municipio ?></td>
