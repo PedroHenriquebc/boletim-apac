@@ -166,8 +166,8 @@
                         <?php
                         if($tipoBoletimPeriodo == 'Mensal'){
                         ?>
-                        <th>Climatologia(mm)</th>
-                        <th>Anomalia(mm)</th>
+                        <th>Climatologia (mm)</th>
+                        <th>Anomalia (mm)</th>
                         <th>Desvio Relativo(%)</th>
                         <?php
                         }
@@ -202,15 +202,19 @@
             </div>
             <div>
                 <?php
+                $mesorregiaoAtual = "";
                 if($mesorregiaof == 'Todas'and $baciaf != 'Todas') {    
                     foreach($data as $item){
                     foreach($item->estacoes as $estacao) {
                         if($estacao->bacia == $baciaf) {            
+                            if($mesorregiaoAtual != $item->mesoregiao){
+                                $mesorregiaoAtual = $item->mesoregiao;
+                       
                 ?>
-            
                 <table>
                     <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
                     <tr>
+
                         <th>Município</th>
                         <th>Estação</th>
                         <th>Bacia</th>
@@ -221,20 +225,19 @@
                         <?php
                         if($tipoBoletimPeriodo == 'Mensal'){
                         ?>
-                        <th>Climatologia(mm)</th>
-                        <th>Anomalia(mm)</th>
+                        <th>Climatologia (mm)</th>
+                        <th>Anomalia (mm)</th>
                         <th>Desvio Relativo(%)</th>
                         <?php
                         }
                         ?>
                         
                     </tr>
-                   
+                   <?php
+                        }
+                    ?>
+
                     <tr>
-                        <?php
-                       
-                 
-                        ?>
                         <td><?php echo $estacao->municipio ?></td>
                         <td><?php echo $estacao->nomeEstacao ?></td>
                         <td><?php echo $estacao->bacia ?></td> 
@@ -281,8 +284,8 @@
                         <?php
                         if($tipoBoletimPeriodo == 'Mensal'){
                         ?>
-                        <th>Climatologia(mm)</th>
-                        <th>Anomalia(mm)</th>
+                        <th>Climatologia (mm)</th>
+                        <th>Anomalia (mm)</th>
                         <th>Desvio Relativo(%)</th>
                         <?php
                         }
