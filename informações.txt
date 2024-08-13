@@ -1,21 +1,6 @@
-https://horadecodar.com.br/como-ler-json-com-php-json_decode/
+<p id="message" style="display:none; color: rgb(51, 82, 221);"></p>
 
-<?php
-//conferir qual formato as datas virão, se tiver d-m-Y precisar formatar:
-
-$data_inicial_cabecalho = DateTime::createFromFormat('Y-m-d', $data_inicial);
-$data_final_cabecalho = DateTime::createFromFormat('Y-m-d', $data_final);
-
-//$data_inicial_cabecalho = $data_inicial_cabecalho->format('d-m-Y');
-//$data_final_cabecalho = $data_final_cabecalho->format('d-m-Y');
-
-$str = "Hello world. It's a beautiful day.";
-print_r (explode("-","2024-05-01"));
-$datainicial = explode("-","2024-05-01");
-$datainicialf = $datainicial[0] . $datainicial[1] . $datainicial[2];
-echo $datainicialf;
-?> 
-
+Bacias:
 ["FERNANDO DE NORONHA", "GI2", "GL3", "RIO TIMBÓ", "RIO BEBERIBE", "RIO PARATIBE", "GL4", "GI6", "GI9", "GI8", "GL5", "GI5", "GL6", "GI1", "GI3", "GI4", "GI7", "IPOJUCA", "BRÍGIDA", "CAPIBARIBE", "GARÇAS", "GL1", "UNA", "PAJEÚ", "PONTAL", "SIRINHAÉM", "TERRA NOVA", "GL2", "MOXOTÓ", "SIRINHAÉM", "IPANEMA", "GOIANA", "MUNDAÚ"]
 
 FERNANDO DE NORONHA

@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <title>Boletim Pluviométrico</title>
     <link rel="stylesheet" href="style.css">
     <script>
         const mesorregiaoData = {
@@ -85,16 +84,23 @@
             const dataFinal = document.getElementById('dataFinal');
             const radioMensal = document.getElementById('mensal');
             const radioDiario = document.getElementById('diario');
+            const message = document.getElementById('message');
 
             if (radioMensal.checked) {
                 dataFinalLabel.style.display = 'block';
                 dataFinal.style.display = 'block';
                 dataFinal.required = true;
-            } else {
+                message.textContent = "Obs: Selecione o intervalo de dados coletados.";
+                message.style.display = 'block';
+            } else if (radioDiario.checked) {
                 dataFinalLabel.style.display = 'none';
                 dataFinal.style.display = 'none';
                 dataFinal.required = false;
                 dataFinal.value = '';
+                message.textContent = "Obs: Será realizado a soma dos valores das 9h do dia anterior até as 9h do dia selecionado. Esses dados contém estações pluviométricas manuais e automáticas.";
+                message.style.display = 'block';
+            } else {
+                message.style.display = 'none';
             }
         }
 
@@ -116,7 +122,7 @@
 <body>
     <div class="container">
         <img src="logo2_apac_2024.png" alt="Logo">
-        <h1>Boletim</h1>
+        <h1>Boletim Pluviométrico</h1>
         <form action="boletim.php" method="post">
             <label for="mesorregiao">Mesorregião</label>
             <select id="mesorregiao" name="mesorregiao" onchange="updateSelections()">
@@ -145,6 +151,8 @@
 
             <label for="dataFinal" id="dataFinalLabel" style="display:none;">Data Final</label>
             <input type="date" id="dataFinal" name="dataFinal" style="display:none;">
+
+            <p id="message" style="display:none; color: rgb(51, 82, 221);"></p>
 
             <button type="submit">Gerar</button>
         </form>
