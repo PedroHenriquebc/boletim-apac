@@ -93,6 +93,27 @@
     $hoje = date('d/m/Y');
     // echo $hoje;
 
+    // $stringDataInicial = $_POST["dataInicial"];
+    $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
+    // if(isset($_POST["dataFinal"]) and $_POST["dataFinal"] != null) {
+        // $stringDataFinal = $_POST["dataFinal"];
+        $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
+        $intervalo = $dataInicial->diff($dataFinal);
+        if ($intervalo->m < 1) { 
+            
+        } else {
+            $diaDataFinal = $dataFinal->format('d');
+            $totalDiasNoMes = $dataFinal->format('t');
+            $intervalo = $totalDiasNoMes - $diaDataFinal;
+            $somaDias = $diaDataFinal + $intervalo;
+            var_dump($diaDataFinal);
+            var_dump($totalDiasNoMes);
+            var_dump($intervalo);
+            var_dump($somaDias);
+        }
+    // }
+    
+
     // URL da API
     if($tipoBoletimPeriodo == 'Mensal'){
         $url = 'http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataFinalFormatUrl.'';
