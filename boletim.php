@@ -15,7 +15,7 @@
             border-collapse: collapse;
             text-align: center;
             margin: auto;
-            box-shadow: 10px 10px 10px #999; 
+            box-shadow: 10px 10px 10px #999;
         }
         th, td {
             border: 1px solid #000000; 
@@ -48,6 +48,10 @@
     </style>
 
     <?php
+
+    $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
+    $hoje = date('d/m/Y');
+
     if(isset($_POST["mesorregiao"])){
         $mesorregiaof = $_POST["mesorregiao"];
     }
@@ -69,18 +73,32 @@
         $dadosCompletosf = $_POST["dadosCompletos"];
     }
 
+    $dataInicialExplode = explode("-", $_POST["dataInicial"]);
+    $dataInicialFormat = $dataInicialExplode[2] . "/" . $dataInicialExplode[1] . "/" . $dataInicialExplode[0];
+    $dataInicialFormatUrl = $dataInicialExplode[0] . $dataInicialExplode[1] . $dataInicialExplode[2];
+    $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
+
     if(isset($_POST["dataFinal"]) and $_POST["dataFinal"] != null) {
-        $dataFinal = explode("-", $_POST["dataFinal"]);
-        $dataFinalFormatUrl = $dataFinal[0] . $dataFinal[1] . $dataFinal[2];
-        $dataFinalFormat = $dataFinal[2] . "/" . $dataFinal[1] . "/" . $dataFinal[0];
+        $dataFinalExplode = explode("-", $_POST["dataFinal"]);
+        $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . $dataFinalExplode[2];
+        $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
+
+        $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
+        $intervalo = $dataInicial->diff($dataFinal);
+
+        // if ($intervalo->m < 1) { 
+        // $maisDeUmMes = false;
+        
+        // } else {
+        //     $diaDataFinal = $dataFinal->format('d');
+        //     $totalDiasNoMes = $dataFinal->format('t');
+        //     $intervalo = $totalDiasNoMes - $diaDataFinal;
+        //     $somaDias = $diaDataFinal + $intervalo;
+        //     $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . (string)$somaDias;
+        //     $maisDeUmMes = true;
+        // }
     }
-
-    $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
-
-    $dataInicial = explode("-", $_POST["dataInicial"]);
-    $dataInicialFormat = $dataInicial[2] . "/" . $dataInicial[1] . "/" . $dataInicial[0];
-    $dataInicialFormatUrl = $dataInicial[0] . $dataInicial[1] . $dataInicial[2];
-
+    
     // echo "meso: " . $mesorregiaof. "<br>";
     // echo empty($mesorregiaof);
     // echo "micro: " . $microrregiaof. "<br>";
@@ -89,30 +107,6 @@
     // echo "dados completos: " . $dadosCompletosf. "<br>";
     // echo "data inicial: " . $_POST["dataInicial"]. "<br>";
     // echo "data final: " . $_POST["dataFinal"]. "<br>";
-
-    $hoje = date('d/m/Y');
-    // echo $hoje;
-
-    // $stringDataInicial = $_POST["dataInicial"];
-    $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
-    // if(isset($_POST["dataFinal"]) and $_POST["dataFinal"] != null) {
-        // $stringDataFinal = $_POST["dataFinal"];
-        $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
-        $intervalo = $dataInicial->diff($dataFinal);
-        if ($intervalo->m < 1) { 
-            
-        } else {
-            $diaDataFinal = $dataFinal->format('d');
-            $totalDiasNoMes = $dataFinal->format('t');
-            $intervalo = $totalDiasNoMes - $diaDataFinal;
-            $somaDias = $diaDataFinal + $intervalo;
-            var_dump($diaDataFinal);
-            var_dump($totalDiasNoMes);
-            var_dump($intervalo);
-            var_dump($somaDias);
-        }
-    // }
-    
 
     // URL da API
     if($tipoBoletimPeriodo == 'Mensal'){
@@ -140,7 +134,6 @@
     curl_close($ch);
 
     $data = json_decode($response);
-    
     
     ?>
 
