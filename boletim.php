@@ -165,9 +165,10 @@
                 <?php
                 if($mesorregiaof == 'Todas'and $baciaf == 'Todas') {    
                     foreach($data as $item){
-                ?>
+                
             
-                <table>
+                echo "<table id='table_$item->mesoregiao'>";
+                ?>
                     <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
                     <tr>
                         <th>Município</th>
@@ -224,8 +225,8 @@
                             if($mesorregiaoAtual != $item->mesoregiao){
                                 $mesorregiaoAtual = $item->mesoregiao;
                        
+                echo "<table id='table_$item->mesoregiao'>";
                 ?>
-                <table>
                     <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
                     <tr>
 
@@ -284,9 +285,8 @@
                     foreach($data as $item){
                         if($item->mesoregiao == $mesorregiaof){
 
+                echo "<table id='table_$item->mesoregiao'>";
                 ?>
-            
-                <table>
                     <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
                     <tr>
                         <th>Município</th>
@@ -442,6 +442,58 @@
             </div>
         </section>
     </div>
+    <script>
+         function sortTable(tableIndex, columnIndex) {
+            var table = document.getElementById("table_" + tableIndex);
+            if (!table) {
+                console.error("Tabela não retornada: table_" + tableIndex);
+                return; // Sai da função se a tabela não existir
+            }
+            var rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        // Ordena todas as tabelas ao carregar a página
+        window.onload = function() {
+            <?php
+            foreach ($data as $item) {
+                // echo "sortTable($item->mesoregiao, 0);"; // Ordena pela primeira coluna (Nome) em cada tabela
+                echo "sortTable(" . json_encode($item->mesoregiao) . ", 0);";
+            }
+            ?>
+        };
+    </script>
 </body>
 
 </html>

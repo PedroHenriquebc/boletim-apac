@@ -90,7 +90,7 @@
                 dataFinalLabel.style.display = 'block';
                 dataFinal.style.display = 'block';
                 dataFinal.required = true;
-                message.textContent = "Obs: Selecione o intervalo de dados coletados.";
+                message.textContent = "Obs: Selecione o intervalo de dados coletados. Intervalo menor que 1 mês será a soma do período selecionado, porém a climatologia e estatísticos serão do mês solicitado. Caso o período seja mais de 1 mês, serão realizados a soma de todo o período.";
                 message.style.display = 'block';
             } else if (radioDiario.checked) {
                 dataFinalLabel.style.display = 'none';
