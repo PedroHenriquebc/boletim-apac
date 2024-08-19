@@ -109,10 +109,16 @@
     // echo "data final: " . $_POST["dataFinal"]. "<br>";
 
     // URL da API
+    // if($tipoBoletimPeriodo == 'Mensal'){
+    //     $url = 'http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataFinalFormatUrl.'';
+    // } else { 
+    //     $url = 'http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataInicialFormatUrl.'';  
+    // }
+
     if($tipoBoletimPeriodo == 'Mensal'){
-        $url = 'http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataFinalFormatUrl.'';
+        $url = 'http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataFinalFormatUrl.'';
     } else { 
-        $url = 'http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataInicialFormatUrl.'';  
+        $url = 'http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial='.$dataInicialFormatUrl.'&DataFinal='.$dataInicialFormatUrl.'';  
     }
 
     // Inicializa o cURL
