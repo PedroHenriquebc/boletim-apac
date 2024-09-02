@@ -1,50 +1,3 @@
-<?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
-        $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
-        $hoje = date('d/m/Y');
-
-        $mesorregiaof = $_POST["mesorregiao"] ?? '';
-        $microrregiaof = $_POST["microrregiao"] ?? '';
-        $baciaf = $_POST["bacia"] ?? '';
-        $tipoBoletimf = $_POST["tipoBoletim"] ?? '';
-        $dadosCompletosf = $_POST["dadosCompletos"] ?? '';
-
-        $dataInicialExplode = explode("-", $_POST["dataInicial"]);
-        $dataInicialFormat = $dataInicialExplode[2] . "/" . $dataInicialExplode[1] . "/" . $dataInicialExplode[0];
-        $dataInicialFormatUrl = $dataInicialExplode[0] . $dataInicialExplode[1] . $dataInicialExplode[2];
-        $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
-
-        if (!empty($_POST["dataFinal"])) {
-            $dataFinalExplode = explode("-", $_POST["dataFinal"]);
-            $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . $dataFinalExplode[2];
-            $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
-
-            $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
-            $intervalo = $dataInicial->diff($dataFinal);
-        }
-
-        $url = $tipoBoletimPeriodo == 'Mensal' ?
-            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
-            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            echo 'Erro ao fazer a requisição: ' . curl_error($ch);
-        }
-
-        curl_close($ch);
-        $data = json_decode($response);
-
-    } else {
-        header("Location: http://dados.apac.pe.gov.br:41120/boletins/boletim-pluviometrico/");
-        exit();
-    }
-    ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -88,6 +41,54 @@
             margin-top: -120px;
         }
     </style>
+
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+        $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
+        $hoje = date('d/m/Y');
+
+        $mesorregiaof = $_POST["mesorregiao"] ?? '';
+        $microrregiaof = $_POST["microrregiao"] ?? '';
+        $baciaf = $_POST["bacia"] ?? '';
+        $tipoBoletimf = $_POST["tipoBoletim"] ?? '';
+        $dadosCompletosf = $_POST["dadosCompletos"] ?? '';
+
+        $dataInicialExplode = explode("-", $_POST["dataInicial"]);
+        $dataInicialFormat = $dataInicialExplode[2] . "/" . $dataInicialExplode[1] . "/" . $dataInicialExplode[0];
+        $dataInicialFormatUrl = $dataInicialExplode[0] . $dataInicialExplode[1] . $dataInicialExplode[2];
+        $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
+
+        if (!empty($_POST["dataFinal"])) {
+            $dataFinalExplode = explode("-", $_POST["dataFinal"]);
+            $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . $dataFinalExplode[2];
+            $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
+
+            $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
+            $intervalo = $dataInicial->diff($dataFinal);
+        }
+
+        $url = $tipoBoletimPeriodo == 'Mensal' ?
+            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
+            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            echo 'Erro ao fazer a requisição: ' . curl_error($ch);
+        }
+
+        curl_close($ch);
+        $data = json_decode($response);
+
+    } else {
+        header("Location: index.html");
+        exit();
+    }
+    ?>
 
     <div class="w-full max-w-6xl mx-auto px-4 py-8 md:px-6 md:py-12">
         <header class="flex flex-col items-center gap-4 mb-8">
