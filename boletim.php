@@ -1,50 +1,49 @@
 <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
-        $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
-        $hoje = date('d/m/Y');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+    $tipoBoletimPeriodo = $_POST["tipoBoletimPeriodo"];
+    $hoje = date('d/m/Y');
 
-        $mesorregiaof = $_POST["mesorregiao"] ?? '';
-        $microrregiaof = $_POST["microrregiao"] ?? '';
-        $baciaf = $_POST["bacia"] ?? '';
-        $tipoBoletimf = $_POST["tipoBoletim"] ?? '';
-        $dadosCompletosf = $_POST["dadosCompletos"] ?? '';
+    $mesorregiaof = $_POST["mesorregiao"] ?? '';
+    $microrregiaof = $_POST["microrregiao"] ?? '';
+    $baciaf = $_POST["bacia"] ?? '';
+    $tipoBoletimf = $_POST["tipoBoletim"] ?? '';
+    $dadosCompletosf = $_POST["dadosCompletos"] ?? '';
 
-        $dataInicialExplode = explode("-", $_POST["dataInicial"]);
-        $dataInicialFormat = $dataInicialExplode[2] . "/" . $dataInicialExplode[1] . "/" . $dataInicialExplode[0];
-        $dataInicialFormatUrl = $dataInicialExplode[0] . $dataInicialExplode[1] . $dataInicialExplode[2];
-        $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
+    $dataInicialExplode = explode("-", $_POST["dataInicial"]);
+    $dataInicialFormat = $dataInicialExplode[2] . "/" . $dataInicialExplode[1] . "/" . $dataInicialExplode[0];
+    $dataInicialFormatUrl = $dataInicialExplode[0] . $dataInicialExplode[1] . $dataInicialExplode[2];
+    $dataInicial = DateTime::createFromFormat('d/m/Y', $dataInicialFormat);
 
-        if (!empty($_POST["dataFinal"])) {
-            $dataFinalExplode = explode("-", $_POST["dataFinal"]);
-            $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . $dataFinalExplode[2];
-            $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
+    if (!empty($_POST["dataFinal"])) {
+        $dataFinalExplode = explode("-", $_POST["dataFinal"]);
+        $dataFinalFormatUrl = $dataFinalExplode[0] . $dataFinalExplode[1] . $dataFinalExplode[2];
+        $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
 
-            $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
-            $intervalo = $dataInicial->diff($dataFinal);
-        }
+        $dataFinal = DateTime::createFromFormat('d/m/Y', $dataFinalFormat);
+    }
 
-        $url = $tipoBoletimPeriodo == 'Mensal' ?
-            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
-            "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
+    $url = $tipoBoletimPeriodo == 'Mensal' ?
+        "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
+        "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $response = curl_exec($ch);
+    $response = curl_exec($ch);
 
-        if (curl_errno($ch)) {
-            echo 'Erro ao fazer a requisição: ' . curl_error($ch);
-        }
-
-        curl_close($ch);
-        $data = json_decode($response);
-
-    } else {
-        header("Location: http://dados.apac.pe.gov.br:41120/boletins/boletim-pluviometrico/");
+    if (curl_errno($ch)) {
+        echo 'Erro ao fazer a requisição: ' . curl_error($ch);
         exit();
     }
-    ?>
+
+    curl_close($ch);
+    $data = json_decode($response);
+} else {
+    header("Location: http://dados.apac.pe.gov.br:41120/boletins/boletim-pluviometrico/");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -102,122 +101,52 @@
             </div>
         </header>
         <section class="mb-8">
-            <!-- MESORREGIAO VAZIA (RETORNA TUDO) -->
             <div>
-                <?php if ($mesorregiaof == 'Todas' && $baciaf == 'Todas') { 
-                    foreach ($data as $item) { ?>
-                        <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
-                        <table id="table_<?php echo $item->mesoregiao ?>">
-                            <tr>
-                                <th>Município</th>
-                                <th>Estação</th>
-                                <th>Bacia</th>
-                                <th>Microrregião</th>
-                                <th>Chuva Total(mm)</th>
-                                <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                    <th>Climatologia (mm)</th>
-                                    <th>Anomalia (mm)</th>
-                                    <th>Desvio Relativo(%)</th>
-                                <?php } ?>
-                            </tr>
-                            <?php foreach ($item->estacoes as $estacao) { ?>
-                                <tr>
-                                    <td><?php echo $estacao->municipio ?></td>
-                                    <td><?php echo $estacao->nomeEstacao ?></td>
-                                    <td><?php echo $estacao->bacia ?></td>
-                                    <td><?php echo $estacao->microregiao ?></td>
-                                    <td><?php echo $estacao->soma_chuva_resultado ?></td>
-                                    <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                        <td><?php echo $estacao->climatologia ?></td>
-                                        <td><?php echo $estacao->anomalia ?></td>
-                                        <td><?php echo $estacao->desvio_relativo ?></td>
-                                    <?php } ?>
-                                </tr>
-                            <?php } ?>
-                        </table>
-                    <?php } ?>
-                <?php } ?>
-            </div>
+                <?php
+                foreach ($data as $item) {
+                    $exibirTabela = false;
 
-            <!-- FILTRO MESORREGIAO E BACIA -->
-            <div>
-                <?php 
-                $mesorregiaoAtual = "";
-                if ($mesorregiaof == 'Todas' && $baciaf != 'Todas') { 
-                    foreach ($data as $item) { 
-                        foreach ($item->estacoes as $estacao) { 
-                            if ($estacao->bacia == $baciaf && $mesorregiaoAtual != $item->mesoregiao) { 
-                                $mesorregiaoAtual = $item->mesoregiao; ?>
-                                <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
-                                <table id="table_<?php echo $item->mesoregiao ?>">
-                                    <tr>
-                                        <th>Município</th>
-                                        <th>Estação</th>
-                                        <th>Bacia</th>
-                                        <th>Microrregião</th>
-                                        <th>Chuva Total(mm)</th>
-                                        <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                            <th>Climatologia (mm)</th>
-                                            <th>Anomalia (mm)</th>
-                                            <th>Desvio Relativo(%)</th>
-                                        <?php } ?>
-                                    </tr>
-                                    <?php } ?>
-                                    <tr>
-                                        <td><?php echo $estacao->municipio ?></td>
-                                        <td><?php echo $estacao->nomeEstacao ?></td>
-                                        <td><?php echo $estacao->bacia ?></td>
-                                        <td><?php echo $estacao->microregiao ?></td>
-                                        <td><?php echo $estacao->soma_chuva_resultado ?></td>
-                                        <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                            <td><?php echo $estacao->climatologia ?></td>
-                                            <td><?php echo $estacao->anomalia ?></td>
-                                            <td><?php echo $estacao->desvio_relativo ?></td>
-                                        <?php } ?>
-                                    </tr>
-                                <?php } ?>
-                            <?php } ?>
-                        </table>
-                    <?php } ?>
-                </div>
-
-            <!-- MESORREGIAO NÃO VAZIA -->
-            <div>
-                <?php if ($mesorregiaof != "Todas") {
-                    foreach ($data as $item) {
-                        if ($item->mesoregiao == $mesorregiaof) { ?>
-                            <h3>Mesorregião <?php echo $item->mesoregiao ?></h3>
-                            <table id="table_<?php echo $item->mesoregiao ?>">
-                                <tr>
-                                    <th>Município</th>
-                                    <th>Estação</th>
-                                    <th>Bacia</th>
-                                    <th>Microrregião</th>
-                                    <th>Chuva Total(mm)</th>
-                                    <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                        <th>Climatologia (mm)</th>
-                                        <th>Anomalia (mm)</th>
-                                        <th>Desvio Relativo(%)</th>
-                                    <?php } ?>
-                                </tr>
-                                <?php foreach ($item->estacoes as $estacao) { ?>
-                                    <tr>
-                                        <td><?php echo $estacao->municipio ?></td>
-                                        <td><?php echo $estacao->nomeEstacao ?></td>
-                                        <td><?php echo $estacao->bacia ?></td>
-                                        <td><?php echo $estacao->microregiao ?></td>
-                                        <td><?php echo $estacao->soma_chuva_resultado ?></td>
-                                        <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
-                                            <td><?php echo $estacao->climatologia ?></td>
-                                            <td><?php echo $estacao->anomalia ?></td>
-                                            <td><?php echo $estacao->desvio_relativo ?></td>
-                                        <?php } ?>
-                                    </tr>
-                                <?php } ?>
-                            </table>
-                        <?php } ?>
-                    <?php } ?>
-                <?php } ?>
+                    // Verifica os filtros aplicados
+                    if ($mesorregiaof == 'Todas' || $item->mesoregiao == $mesorregiaof) {
+                        foreach ($item->estacoes as $estacao) {
+                            if (($microrregiaof == 'Todas' || $estacao->microregiao == $microrregiaof) &&
+                                ($baciaf == 'Todas' || $estacao->bacia == $baciaf)) {
+                                if (!$exibirTabela) {
+                                    $exibirTabela = true;
+                                    echo "<h3>Mesorregião " . $item->mesoregiao . "</h3>";
+                                    echo "<table id='table_" . $item->mesoregiao . "'><tr>
+                                            <th>Município</th>
+                                            <th>Estação</th>
+                                            <th>Bacia</th>
+                                            <th>Microrregião</th>
+                                            <th>Chuva Total(mm)</th>";
+                                    if ($tipoBoletimPeriodo == 'Mensal') {
+                                        echo "<th>Climatologia (mm)</th>
+                                              <th>Anomalia (mm)</th>
+                                              <th>Desvio Relativo(%)</th>";
+                                    }
+                                    echo "</tr>";
+                                }
+                                echo "<tr>
+                                        <td>{$estacao->municipio}</td>
+                                        <td>{$estacao->nomeEstacao}</td>
+                                        <td>{$estacao->bacia}</td>
+                                        <td>{$estacao->microregiao}</td>
+                                        <td>{$estacao->soma_chuva_resultado}</td>";
+                                if ($tipoBoletimPeriodo == 'Mensal') {
+                                    echo "<td>{$estacao->climatologia}</td>
+                                          <td>{$estacao->anomalia}</td>
+                                          <td>{$estacao->desvio_relativo}</td>";
+                                }
+                                echo "</tr>";
+                            }
+                        }
+                        if ($exibirTabela) {
+                            echo "</table>";
+                        }
+                    }
+                }
+                ?>
             </div>
         </section>
     </div>
