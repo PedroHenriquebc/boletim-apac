@@ -23,7 +23,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #d8ac29;
+    color: #383f73;
     /* Cor do texto azul */
 }
 
@@ -70,7 +70,7 @@ input[type="radio"] {
 
 /* From Uiverse.io by adamgiebl */
 .cssbuttons-io-button {
-    background: #e7d809;
+    background: #3747c2;
     color: rgb(255, 255, 255);
     font-family: inherit;
     width: 25%;
@@ -83,7 +83,7 @@ input[type="radio"] {
     letter-spacing: 0.05em;
     display: flex;
     align-items: center;
-    box-shadow: inset 0 0 1.6em -0.6em hsl(56, 100%, 56%);
+    box-shadow: inset 0 0 1.6em -0.6em hsl(233, 72%, 62%);
     overflow: hidden;
     position: relative;
     height: 2.8em;
@@ -101,7 +101,7 @@ input[type="radio"] {
     height: 2.2em;
     width: 2.2em;
     border-radius: 0.7em;
-    box-shadow: 0.1em 0.1em 0.6em 0.2em hsl(56, 70%, 53%);
+    box-shadow: 0.1em 0.1em 0.6em 0.2em hsl(232, 34%, 33%);
     right: 0.3em;
     transition: all 0.3s;
 }
@@ -113,7 +113,7 @@ input[type="radio"] {
 .cssbuttons-io-button .icon svg {
     width: 1.1em;
     transition: transform 0.3s;
-    color: #c0a81e;
+    color: hsl(232, 34%, 33%);
 }
 
 .cssbuttons-io-button:hover .icon svg {

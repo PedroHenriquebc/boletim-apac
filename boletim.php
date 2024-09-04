@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 
     // URL da API
     $url = $tipoBoletimPeriodo == 'Mensal' ?
-        "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
-        "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
+        "http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
+        "http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             <div class="text-center">
                 <h1 class="text-2xl font-bold">Boletim Pluviométrico</h1>
                 
-                 <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
+                <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
                     <p class="text-gray-500"><?php echo $dataInicialFormat . ' - ' . $dataFinalFormat; ?></p>
                 <?php } else { ?>
                     <p class="text-gray-500"><?php echo $dataInicialFormat ?></p>
@@ -105,15 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         </header>
         <section class="mb-8">
             <?php
-            $mesorregiaoAtual = "";
             foreach ($data as $item) {
-                if (($mesorregiaof == 'Todas' || $item->mesoregiao == $mesorregiaof) &&
-                    ($microrregiaof == 'Todas' || $microrregiaof == '' || $item->microregiao == $microrregiaof)) {
+                if (($mesorregiaof == 'Todas' || $item->mesoregiao == $mesorregiaof)) {
 
                     $maiorChuva = null;
 
                     foreach ($item->estacoes as $estacao) {
-                        if (($baciaf == 'Todas' || $estacao->bacia == $baciaf)) {
+                        if (($baciaf == 'Todas' || $estacao->bacia == $baciaf) &&
+                            ($microrregiaof == 'Todas' || $microrregiaof == '' || $estacao->microregiao == $microrregiaof)) {
                             if ($maiorChuva === null || $estacao->soma_chuva_resultado > $maiorChuva->soma_chuva_resultado) {
                                 $maiorChuva = $estacao;
                             }
@@ -140,7 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
                         echo "</tr>";
 
                         foreach ($item->estacoes as $estacao) {
-                            if ($baciaf == 'Todas' || $estacao->bacia == $baciaf) {
+                            if (($baciaf == 'Todas' || $estacao->bacia == $baciaf) &&
+                                ($microrregiaof == 'Todas' || $microrregiaof == '' || $estacao->microregiao == $microrregiaof)) {
                                 echo "<tr>
                                         <td>" . $estacao->municipio . "</td>
                                         <td>" . $estacao->nomeEstacao . "</td>
