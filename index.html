@@ -127,7 +127,8 @@
     <div class="container">
         <img src="logo2_apac_2024.png" alt="Logo">
         <h1>Boletim Pluviométrico</h1>
-        <form action="boletim.php" method="post">
+        <form id="formBoletim" method="POST" action="boletim.php">
+            
             <label for="mesorregiao">Mesorregião</label>
             <select id="mesorregiao" name="mesorregiao" onchange="updateSelections()">
                 <option value="Todas">Todas</option>
@@ -150,6 +151,25 @@
             <label for="diario">Diário</label>
             <br>
 
+            <fieldset>
+                <legend>Escolha as colunas:</legend>
+                <label hidden><input type="checkbox" name="colunas[]" value="municipio" checked> Município</label>
+                <label hidden><input type="checkbox" name="colunas[]" value="nomeEstacao" checked> Estação</label>
+                <label hidden><input type="checkbox" name="colunas[]" value="soma_chuva_resultado" checked> Chuva Total (mm)</label>
+                <label><input type="checkbox" name="colunas[]" value="bacia"> Bacia</label>
+                <label><input type="checkbox" name="colunas[]" value="microregiao"> Microrregião</label>
+                <label><input type="checkbox" name="colunas[]" value="latitude"> Latitude</label>
+                <label><input type="checkbox" name="colunas[]" value="longitude"> Longitude</label>
+                <label><input type="checkbox" name="colunas[]" value="codigo_gmmc"> Código Estação</label>
+
+                
+                <span id="mensalCampos">
+                    <label><input type="checkbox" name="colunas[]" value="climatologia"> Climatologia (mm)</label>
+                    <label><input type="checkbox" name="colunas[]" value="anomalia"> Anomalia (mm)</label>
+                    <label><input type="checkbox" name="colunas[]" value="desvio_relativo"> Desvio Relativo (%)</label>
+                </span>
+            </fieldset>
+
             <label for="dataInicial">Data Inicial</label>
             <input type="date" id="dataInicial" name="dataInicial" required>
 
@@ -161,7 +181,7 @@
             <!-- <button type="submit">Gerar</button> -->
             <div class="button-container">
                 <button type="submit" class="cssbuttons-io-button">
-                    Gerar
+                    Gerar Boletim
                     <div class="icon">
                         <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0 0h24v24H0z" fill="none"></path>
@@ -173,6 +193,33 @@
             </div>
 
         </form>
+        <script>
+            // verifica e altera a exibição das colunas baseado no tipo do boletim
+            document.querySelectorAll('input[name="tipoBoletimPeriodo"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === "Mensal") {
+                        document.getElementById('mensalCampos').style.display = "block";
+                    } else {
+                        document.getElementById('mensalCampos').style.display = "none";
+                    }
+
+                    document.querySelectorAll('input[name="colunas[]"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                });
+            });
+
+            // laert para caso nenhuma checkbox de colunas seja marcada
+            // document.getElementById("formBoletim").addEventListener("submit", function(event) {
+            //     let checkboxes = document.querySelectorAll('input[name="colunas[]"]:checked');
+                
+            //     if (checkboxes.length === 0) {
+            //         alert("Por favor, selecione pelo menos uma coluna antes de gerar o boletim.");
+            //         event.preventDefault();
+            //     }
+            // });
+            </script>
+            
     </div>
 </body>
 

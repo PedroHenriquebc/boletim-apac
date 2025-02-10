@@ -5,6 +5,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $mesorregiaof = $_POST["mesorregiao"] ?? '';
     $microrregiaof = $_POST["microrregiao"] ?? '';
     $baciaf = $_POST["bacia"] ?? '';
+    // $colunasSelecionadas = $_POST["colunas"] ?? ["municipio", "nomeEstacao", "soma_chuva_resultado", "latitude", "longitude", "codigo_gmmc"];
+    $colunasSelecionadas = $_POST["colunas"] ?? [];
+    $colunasSelecionadas = array_merge($colunasSelecionadas, ["municipio", "nomeEstacao", "soma_chuva_resultado"]);
+
 
     // Formatação das datas
     $dataInicialExplode = explode("-", $_POST["dataInicial"]);
@@ -18,10 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         $dataFinalFormat = $dataFinalExplode[2] . "/" . $dataFinalExplode[1] . "/" . $dataFinalExplode[0];
     }
 
-    // URL da API
+    // // URL da API
     $url = $tipoBoletimPeriodo == 'Mensal' ?
         "http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
         "http://dados.apac.pe.gov.br:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
+    
+    //URL da API
+    // $url = $tipoBoletimPeriodo == 'Mensal' ?
+        // "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataFinalFormatUrl" :
+        // "http://172.17.100.30:41120/blank_json_boletim_met_mes/?DataInicial=$dataInicialFormatUrl&DataFinal=$dataInicialFormatUrl";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -48,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boletim</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="icons8-água-48.png">
 </head>
 
 <body>
@@ -85,14 +95,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         img {
             display: block;
             margin: auto;
-            height: 400px;
-            margin-top: -120px;
+            height: 200px;
+            margin-top: -80px;
         }
+        
+        
+        btn-imprimir {
+            background-color: #383f73;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        btn-imprimir:hover {
+            background-color: #555;
+        }
+        
+        
+        
     </style>
 
     <div class="w-full max-w-6xl mx-auto px-4 py-8 md:px-6 md:py-12">
         <header class="flex flex-col items-center gap-4 mb-8">
-            <img src="logo3_apac_2024.png" alt="">
+	    <img src="apac_secretaria_recursos_hidricos.png" alt="">
             <div class="text-center">
                 <h1 class="text-2xl font-bold">Boletim Pluviométrico</h1>
                 
@@ -102,6 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
                     <p class="text-gray-500"><?php echo $dataInicialFormat ?></p>
                 <?php } ?>
             </div>
+         
         </header>
         <section class="mb-8">
             <?php
@@ -122,18 +152,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
                     if ($maiorChuva !== null) {
                         echo "<h3>Mesorregião " . $item->mesoregiao . "</h3>";
                         echo "<p class='maior-chuva'>Maior chuva: " . $maiorChuva->municipio . " - " . $maiorChuva->soma_chuva_resultado . " mm</p>";
-                        echo "<table>";
-                        echo "<tr>
-                                <th>Município</th>
-                                <th>Estação</th>
-                                <th>Bacia</th>
-                                <th>Microrregião</th>
-                                <th>Chuva Total(mm)</th>";
+                        echo "<table><tr>";
+
+                        if (in_array("codigo_gmmc", $colunasSelecionadas)) echo "<th>Código Estação</th>";
+                        if (in_array("municipio", $colunasSelecionadas)) echo "<th>Município</th>";
+                        if (in_array("nomeEstacao", $colunasSelecionadas)) echo "<th>Estação</th>";
+                        if (in_array("bacia", $colunasSelecionadas)) echo "<th>Bacia</th>";
+                        if (in_array("microregiao", $colunasSelecionadas)) echo "<th>Microrregião</th>";
+                        if (in_array("latitude", $colunasSelecionadas)) echo "<th>Latitude</th>";
+                        if (in_array("longitude", $colunasSelecionadas)) echo "<th>Longitude</th>";
+                        if (in_array("soma_chuva_resultado", $colunasSelecionadas)) echo "<th>Chuva Total (mm)</th>";
+
 
                         if ($tipoBoletimPeriodo == 'Mensal') {
-                            echo "<th>Climatologia (mm)</th>
-                                  <th>Anomalia (mm)</th>
-                                  <th>Desvio Relativo(%)</th>";
+                            if (in_array("climatologia", $colunasSelecionadas)) echo "<th>Climatologia (mm)</th>";
+                            if (in_array("anomalia", $colunasSelecionadas)) echo "<th>Anomalia (mm)</th>";
+                            if (in_array("desvio_relativo", $colunasSelecionadas)) echo "<th>Desvio Relativo (%)</th>";
                         }
 
                         echo "</tr>";
@@ -141,17 +175,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
                         foreach ($item->estacoes as $estacao) {
                             if (($baciaf == 'Todas' || $estacao->bacia == $baciaf) &&
                                 ($microrregiaof == 'Todas' || $microrregiaof == '' || $estacao->microregiao == $microrregiaof)) {
-                                echo "<tr>
-                                        <td>" . $estacao->municipio . "</td>
-                                        <td>" . $estacao->nomeEstacao . "</td>
-                                        <td>" . $estacao->bacia . "</td>
-                                        <td>" . $estacao->microregiao . "</td>
-                                        <td>" . $estacao->soma_chuva_resultado . "</td>";
+
+                                echo "<tr>";
+
+                                if (in_array("codigo_gmmc", $colunasSelecionadas)) echo "<td>" . $estacao->codigo_gmmc . "</td>";  
+                                if (in_array("municipio", $colunasSelecionadas)) echo "<td>" . $estacao->municipio . "</td>";
+                                if (in_array("nomeEstacao", $colunasSelecionadas)) echo "<td>" . $estacao->nomeEstacao . "</td>";
+                                if (in_array("bacia", $colunasSelecionadas)) echo "<td>" . $estacao->bacia . "</td>";
+                                if (in_array("microregiao", $colunasSelecionadas)) echo "<td>" . $estacao->microregiao . "</td>";
+                                if (in_array("latitude", $colunasSelecionadas)) echo "<td>" . $estacao->latitude . "</td>";
+                                if (in_array("longitude", $colunasSelecionadas)) echo "<td>" . $estacao->longitude . "</td>";
+                                if (in_array("soma_chuva_resultado", $colunasSelecionadas)) echo "<td>" . $estacao->soma_chuva_resultado . "</td>";
 
                                 if ($tipoBoletimPeriodo == 'Mensal') {
-                                    echo "<td>" . $estacao->climatologia . "</td>
-                                          <td>" . $estacao->anomalia . "</td>
-                                          <td>" . $estacao->desvio_relativo . "</td>";
+                                    if (in_array("climatologia", $colunasSelecionadas)) echo "<td>" . $estacao->climatologia . "</td>";
+                                    if (in_array("anomalia", $colunasSelecionadas)) echo "<td>" . $estacao->anomalia . "</td>";
+                                    if (in_array("desvio_relativo", $colunasSelecionadas)) echo "<td>" . $estacao->desvio_relativo . "</td>";
                                 }
 
                                 echo "</tr>";
