@@ -5,7 +5,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $mesorregiaof = $_POST["mesorregiao"] ?? '';
     $microrregiaof = $_POST["microrregiao"] ?? '';
     $baciaf = $_POST["bacia"] ?? '';
-    $colunasSelecionadas = $_POST["colunas"] ?? ["municipio", "nomeEstacao", "soma_chuva_resultado"];
+    // $colunasSelecionadas = $_POST["colunas"] ?? ["municipio", "nomeEstacao", "soma_chuva_resultado", "latitude", "longitude", "codigo_gmmc"];
+    $colunasSelecionadas = $_POST["colunas"] ?? [];
+    $colunasSelecionadas = array_merge($colunasSelecionadas, ["municipio", "nomeEstacao", "soma_chuva_resultado"]);
+
 
     // Formatação das datas
     $dataInicialExplode = explode("-", $_POST["dataInicial"]);
@@ -112,6 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             background-color: #555;
         }
         
+        p.rodape{
+            margin-left: 3px;
+        }
+        
         
         
     </style>
@@ -120,11 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
         <header class="flex flex-col items-center gap-4 mb-8">
 	    <img src="apac_secretaria_recursos_hidricos.png" alt="">
             <div class="text-center">
-                <h1 class="text-2xl font-bold">Boletim Pluviométrico</h1>
+                <!-- <h1 class="text-2xl font-bold">Boletim Pluviométrico</h1> -->
                 
                 <?php if ($tipoBoletimPeriodo == 'Mensal') { ?>
+                    <h1 class="text-2xl font-bold">Boletim Pluviométrico de Acumulados</h1>
                     <p class="text-gray-500"><?php echo $dataInicialFormat . ' - ' . $dataFinalFormat; ?></p>
                 <?php } else { ?>
+                    <h1 class="text-2xl font-bold">Boletim Pluviométrico Diário</h1>
                     <p class="text-gray-500"><?php echo $dataInicialFormat ?></p>
                 <?php } ?>
             </div>
@@ -148,14 +157,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 
                     if ($maiorChuva !== null) {
                         echo "<h3>Mesorregião " . $item->mesoregiao . "</h3>";
-                        echo "<p class='maior-chuva'>Maior chuva: " . $maiorChuva->municipio . " - " . $maiorChuva->soma_chuva_resultado . " mm</p>";
+                        if ($tipoBoletimPeriodo == 'Mensal'){
+                            echo "<p class='maior-chuva'>Maior acumulado: " . $maiorChuva->municipio . " - " . $maiorChuva->soma_chuva_resultado . " mm</p>";
+                        } else {
+                            echo "<p class='maior-chuva'>Maior chuva: " . $maiorChuva->municipio . " - " . $maiorChuva->soma_chuva_resultado . " mm</p>";
+                        }
                         echo "<table><tr>";
 
+                        if (in_array("codigo_gmmc", $colunasSelecionadas)) echo "<th>Código Estação</th>";
                         if (in_array("municipio", $colunasSelecionadas)) echo "<th>Município</th>";
                         if (in_array("nomeEstacao", $colunasSelecionadas)) echo "<th>Estação</th>";
                         if (in_array("bacia", $colunasSelecionadas)) echo "<th>Bacia</th>";
                         if (in_array("microregiao", $colunasSelecionadas)) echo "<th>Microrregião</th>";
+                        if (in_array("latitude", $colunasSelecionadas)) echo "<th>Latitude</th>";
+                        if (in_array("longitude", $colunasSelecionadas)) echo "<th>Longitude</th>";
                         if (in_array("soma_chuva_resultado", $colunasSelecionadas)) echo "<th>Chuva Total (mm)</th>";
+
 
                         if ($tipoBoletimPeriodo == 'Mensal') {
                             if (in_array("climatologia", $colunasSelecionadas)) echo "<th>Climatologia (mm)</th>";
@@ -171,10 +188,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 
                                 echo "<tr>";
 
+                                if (in_array("codigo_gmmc", $colunasSelecionadas)) echo "<td>" . $estacao->codigo_gmmc . "</td>";  
                                 if (in_array("municipio", $colunasSelecionadas)) echo "<td>" . $estacao->municipio . "</td>";
                                 if (in_array("nomeEstacao", $colunasSelecionadas)) echo "<td>" . $estacao->nomeEstacao . "</td>";
                                 if (in_array("bacia", $colunasSelecionadas)) echo "<td>" . $estacao->bacia . "</td>";
                                 if (in_array("microregiao", $colunasSelecionadas)) echo "<td>" . $estacao->microregiao . "</td>";
+                                if (in_array("latitude", $colunasSelecionadas)) echo "<td>" . $estacao->latitude . "</td>";
+                                if (in_array("longitude", $colunasSelecionadas)) echo "<td>" . $estacao->longitude . "</td>";
                                 if (in_array("soma_chuva_resultado", $colunasSelecionadas)) echo "<td>" . $estacao->soma_chuva_resultado . "</td>";
 
                                 if ($tipoBoletimPeriodo == 'Mensal') {
@@ -194,6 +214,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             ?>
         </section>
     </div>
+    <footer>
+       <p class="rodape">1)Convencional: Aparelho de medição manual</p>
+       <p class="rodape">2)PCD(Plataforma de Coleta de Dados): Aparelho de medição automática</p>
+    </footer>
 </body>
 
 </html>

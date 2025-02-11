@@ -126,7 +126,7 @@
 <body>
     <div class="container">
         <img src="logo2_apac_2024.png" alt="Logo">
-        <h1>Boletim Pluviométrico</h1>
+        <h1 id="titulo">Boletim Pluviométrico de Acumulados</h1>
         <form id="formBoletim" method="POST" action="boletim.php">
             
             <label for="mesorregiao">Mesorregião</label>
@@ -199,8 +199,10 @@
                 radio.addEventListener('change', function () {
                     if (this.value === "Mensal") {
                         document.getElementById('mensalCampos').style.display = "block";
+                        document.getElementById("titulo").innerText = "Boletim Pluviométrico de Acumulados";
                     } else {
                         document.getElementById('mensalCampos').style.display = "none";
+                        document.getElementById("titulo").innerText = "Boletim Pluviométrico Diário";
                     }
 
                     document.querySelectorAll('input[name="colunas[]"]').forEach(checkbox => {
@@ -208,6 +210,10 @@
                     });
                 });
             });
+
+            function alterarTitulo(valor) {
+                    document.getElementById("titulo").innerText = valor;
+            }
 
             // laert para caso nenhuma checkbox de colunas seja marcada
             // document.getElementById("formBoletim").addEventListener("submit", function(event) {
